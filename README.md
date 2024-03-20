@@ -1,6 +1,6 @@
 A very simple java library to interact with Claude's API
 
-Examples usage:
+Example usage:
 ```java
         ClaudeAPI client = new ClaudeClient("YOUR_API_KEY");
 

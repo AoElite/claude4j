@@ -18,6 +18,7 @@ public class ExampleA {
                 .model(ClaudeModel.HAIKU)
                 .max_tokens(100)
                 .temperature(1)
+                .stop_sequence("###")
                 .system("You are a AI math assistant")
                 .message(new ClaudeMessage(ClaudeRole.USER, "what's 2+2?"))
                 .build());

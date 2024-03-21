@@ -7,20 +7,23 @@ group = 'com.aoelite.claude'
 version = '1.0-SNAPSHOT'
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
     repositories {
         mavenLocal()
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/aoelite/claude4j"
+            url = uri("https://maven.pkg.github.com/aoelite/claude4j")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
             }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            groupId = 'com.aoelite.claude'
+            artifactId = 'claude4j'
+            version = '1.0-SNAPSHOT'
+            from components.java
         }
     }
 }

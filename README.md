@@ -17,3 +17,9 @@ Example usage:
             }
         }
 ```
+
+TODO:
+- [ ] Image/File support
+- [ ] Stream support
+- [ ] Embeddings
+- [ ] Legacy models

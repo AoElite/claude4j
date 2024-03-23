@@ -7,11 +7,24 @@ Example usage:
         ClaudeResponse response = client.sendRequest(ClaudeRequest.builder()
                 .model(ClaudeModel.HAIKU)
                 .max_tokens(100)
-                .message(new ClaudeMessage(ClaudeRole.USER, "what's 2+2?"))
+                .temperature(0)
+                .stop_sequence("###")
+                .system("You are a AI math assistant")
+                .input(RoleInput.builder()
+                        .role(ClaudeRole.USER)
+                        .message(new TextMessage("what's 2+2?"))
+                        .build())
+                .input(RoleInput.builder()
+                        .role(ClaudeRole.ASSISTANT)
+                        .message(new TextMessage("4"))
+                        .build())
+                .input(RoleInput.builder()
+                        .role(ClaudeRole.USER)
+                        .message(new TextMessage("what's 3+3?"))
+                        .build())
                 .build());
 
-        // response could be null if it timed out
-        if (response != null) {
+        if (response != null) { // response could timeout
             for (String string : response.getContent()) {
                 System.out.println(string);
             }
@@ -19,7 +32,7 @@ Example usage:
 ```
 
 TODO:
-- [ ] Image/File support
+- [X] Image/File support
 - [ ] Stream support
 - [ ] Embeddings
 - [ ] Legacy models

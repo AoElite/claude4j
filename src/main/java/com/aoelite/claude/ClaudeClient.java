@@ -1,10 +1,11 @@
 package com.aoelite.claude;
 
 import com.aoelite.claude.api.ClaudeAPI;
-import com.aoelite.claude.data.ClaudeMessage;
 import com.aoelite.claude.data.ClaudeRequest;
 import com.aoelite.claude.data.ClaudeResponse;
 import com.aoelite.claude.data.ClaudeUsage;
+import com.aoelite.claude.data.input.ClaudeMessage;
+import com.aoelite.claude.data.input.RoleInput;
 import com.aoelite.claude.data.types.ClaudeRole;
 import com.aoelite.claude.data.types.ClaudeStopReason;
 import com.google.gson.JsonArray;
@@ -45,7 +46,7 @@ public class ClaudeClient implements ClaudeAPI {
 
     @Override
     public @Nullable ClaudeResponse sendRequest(ClaudeRequest request) {
-        if (request.getMessages().isEmpty()) throw new IllegalArgumentException("Messages cannot be empty");
+        if (request.getInputs().isEmpty()) throw new IllegalArgumentException("Inputs cannot be empty");
         JsonObject jsonResponse = sendRequestAndGetJson(request);
         if (jsonResponse == null) return null;
         return parseResponse(jsonResponse);
@@ -102,7 +103,7 @@ public class ClaudeClient implements ClaudeAPI {
         return null;
     }
 
-    private JsonObject generateJsonRequest(ClaudeRequest request) {
+    public JsonObject generateJsonRequest(ClaudeRequest request) {
         JsonObject object = new JsonObject();
         object.addProperty("model", request.getModel().getId());
         object.addProperty("max_tokens", request.getMax_tokens());
@@ -119,12 +120,20 @@ public class ClaudeClient implements ClaudeAPI {
         if (request.getSystem() != null && !request.getSystem().isEmpty())
             object.addProperty("system", request.getSystem());
         JsonArray messages = new JsonArray();
-        for (ClaudeMessage message : request.getMessages()) {
+        for (RoleInput input : request.getInputs()) {
+            //
             JsonObject messageObject = new JsonObject();
-            messageObject.addProperty("role", message.getRole().getId());
-            messageObject.addProperty("content", message.getContent());
+            messageObject.addProperty("role", input.getRole().getId());
+            //
+            JsonArray messageContent = new JsonArray();
+            for (ClaudeMessage content : input.getMessages()) {
+                messageContent.add(content.toJsonObject());
+            }
+            //
+            messageObject.add("content", messageContent);
             messages.add(messageObject);
         }
+
         object.add("messages", messages);
         return object;
     }

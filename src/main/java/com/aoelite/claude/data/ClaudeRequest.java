@@ -1,5 +1,8 @@
 package com.aoelite.claude.data;
 
+import com.aoelite.claude.data.input.ClaudeMessage;
+import com.aoelite.claude.data.input.RoleInput;
+import com.aoelite.claude.data.input.TextMessage;
 import com.aoelite.claude.data.types.ClaudeModel;
 import lombok.*;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +20,6 @@ public class ClaudeRequest {
     @Nullable private String system;
     @Nullable @Singular private List<String> stop_sequences;
     @Builder.Default private double temperature = 0.0;
-    @NonNull @Singular private final List<ClaudeMessage> messages;
+    @NonNull @Singular private final List<RoleInput> inputs;
 
 }

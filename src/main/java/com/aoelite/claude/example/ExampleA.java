@@ -2,9 +2,10 @@ package com.aoelite.claude.example;
 
 import com.aoelite.claude.ClaudeClient;
 import com.aoelite.claude.api.ClaudeAPI;
-import com.aoelite.claude.data.ClaudeMessage;
 import com.aoelite.claude.data.ClaudeRequest;
 import com.aoelite.claude.data.ClaudeResponse;
+import com.aoelite.claude.data.input.RoleInput;
+import com.aoelite.claude.data.input.TextMessage;
 import com.aoelite.claude.data.types.ClaudeModel;
 import com.aoelite.claude.data.types.ClaudeRole;
 
@@ -17,14 +18,24 @@ public class ExampleA {
         ClaudeResponse response = client.sendRequest(ClaudeRequest.builder()
                 .model(ClaudeModel.HAIKU)
                 .max_tokens(100)
-                .temperature(1)
+                .temperature(0)
                 .stop_sequence("###")
                 .system("You are a AI math assistant")
-                .message(new ClaudeMessage(ClaudeRole.USER, "what's 2+2?"))
+                .input(RoleInput.builder()
+                        .role(ClaudeRole.USER)
+                        .message(new TextMessage("what's 2+2?"))
+                        .build())
+                .input(RoleInput.builder()
+                        .role(ClaudeRole.ASSISTANT)
+                        .message(new TextMessage("4"))
+                        .build())
+                .input(RoleInput.builder()
+                        .role(ClaudeRole.USER)
+                        .message(new TextMessage("what's 3+3?"))
+                        .build())
                 .build());
 
-        // response could be null if it timed out
-        if (response != null) {
+        if (response != null) { // response could timeout
             for (String string : response.getContent()) {
                 System.out.println(string);
             }

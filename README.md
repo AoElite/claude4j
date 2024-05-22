@@ -31,6 +31,8 @@ Example usage:
         }
 ```
 
+You can create a API key [here](https://console.anthropic.com/settings/keys) once you have created a Anthropic account.
+
 TODO:
 - [X] Image/File support
 - [ ] Stream support

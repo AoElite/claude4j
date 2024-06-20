@@ -1,9 +1,7 @@
 package com.aoelite.claude.data;
 
-import com.aoelite.claude.data.input.ClaudeMessage;
 import com.aoelite.claude.data.input.RoleInput;
-import com.aoelite.claude.data.input.TextMessage;
-import com.aoelite.claude.data.types.ClaudeModel;
+import com.aoelite.claude.data.types.AIModel;
 import lombok.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +13,7 @@ import java.util.List;
 @Builder
 public class ClaudeRequest {
 
-    @NonNull private final ClaudeModel model;
+    @NonNull private final AIModel AIModel;
     @Builder.Default private final int max_tokens = 1000;
     @Nullable private String system;
     @Nullable @Singular private List<String> stop_sequences;

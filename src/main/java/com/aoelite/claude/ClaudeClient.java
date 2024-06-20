@@ -105,7 +105,7 @@ public class ClaudeClient implements ClaudeAPI {
 
     public JsonObject generateJsonRequest(ClaudeRequest request) {
         JsonObject object = new JsonObject();
-        object.addProperty("model", request.getModel().getId());
+        object.addProperty("model", request.getAIModel().getId());
         object.addProperty("max_tokens", request.getMax_tokens());
         object.addProperty("temperature", request.getTemperature());
 

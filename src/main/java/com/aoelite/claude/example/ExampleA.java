@@ -16,7 +16,7 @@ public class ExampleA {
         ClaudeAPI client = new ClaudeClient("YOUR_API_KEY");
 
         ClaudeResponse response = client.sendRequest(ClaudeRequest.builder()
-                .AIModel(ClaudeAIModel.HAIKU)
+                .model(ClaudeAIModel.HAIKU)
                 .max_tokens(100)
                 .temperature(0)
                 .stop_sequence("###")

@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class ClaudeRequest {
 
-    @NonNull private final AIModel AIModel;
+    @NonNull private final AIModel model;
     @Builder.Default private final int max_tokens = 1000;
     @Nullable private String system;
     @Nullable @Singular private List<String> stop_sequences;

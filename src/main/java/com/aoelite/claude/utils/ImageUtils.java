@@ -18,9 +18,9 @@ public class ImageUtils {
         }
     }
 
-    public static String convertToBase64(BufferedImage image) {
+    public static String convertToBase64(BufferedImage image, String mimeType) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "PNG", out);
+            ImageIO.write(image, mimeType.substring(6), out);
             byte[] bytes = out.toByteArray();
             return Base64.getEncoder().encodeToString(bytes);
         } catch (IOException e) {
@@ -45,7 +45,7 @@ public class ImageUtils {
             throw new IllegalArgumentException("Unsupported image type: " + mimeType);
         try {
             BufferedImage image = ImageIO.read(file);
-            return convertToBase64(image);
+            return convertToBase64(image, mimeType);
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed to read image file", e);
         }

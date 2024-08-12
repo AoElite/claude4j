@@ -6,6 +6,9 @@ import com.aoelite.claude.data.ClaudeResponse;
 import com.aoelite.claude.data.ClaudeUsage;
 import com.aoelite.claude.data.input.ClaudeMessage;
 import com.aoelite.claude.data.input.RoleInput;
+import com.aoelite.claude.data.stream.ClaudeStreamHandler;
+import com.aoelite.claude.data.stream.ClaudeStreamReader;
+import com.aoelite.claude.data.stream.ClaudeStreamResponse;
 import com.aoelite.claude.data.types.ClaudeRole;
 import com.aoelite.claude.data.types.ClaudeStopReason;
 import com.google.gson.JsonArray;
@@ -14,7 +17,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ClaudeClient implements ClaudeAPI {
+
     private final String api_key;
     private final HttpClient httpClient;
     private final static String API_URL = "https://api.anthropic.com/v1/messages";
@@ -57,6 +64,37 @@ public class ClaudeClient implements ClaudeAPI {
         return CompletableFuture.supplyAsync(() -> sendRequest(request));
     }
 
+    @Override
+    public CompletableFuture<ClaudeStreamResponse> sendStreamRequestAsync(ClaudeRequest request, ClaudeStreamHandler handler) {
+        return CompletableFuture.supplyAsync(() -> sendStreamRequest(request, handler));
+    }
+
+    private ClaudeStreamResponse sendStreamRequest(ClaudeRequest request, ClaudeStreamHandler handler) {
+        if (request.getInputs().isEmpty()) throw new IllegalArgumentException("Inputs cannot be empty");
+        JsonObject jsonObject = generateJsonRequest(request);
+        jsonObject.addProperty("stream", true);
+        ClaudeStreamReader streamReader = new ClaudeStreamReader(handler);
+        ClaudeStreamResponse stream = streamReader.getStream();
+        HttpRequest httpRequest = generateHttpRequest(jsonObject.toString());
+        try {
+            HttpResponse<InputStream> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
+            if (response.statusCode() != 200) {
+                System.err.println("Response code: " + response.statusCode());
+                return null;
+            }
+            //
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    streamReader.process(line);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return stream;
+    }
+
     private ClaudeResponse parseResponse(JsonObject json) {
         String id = json.get("id").getAsString();
         String type = json.get("type").getAsString();
@@ -82,13 +120,7 @@ public class ClaudeClient implements ClaudeAPI {
     private JsonObject sendRequestAndGetJson(ClaudeRequest request) {
         JsonObject jsonObject = generateJsonRequest(request);
         String json = jsonObject.toString();
-        HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI)
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .header("x-api-key", api_key)
-                .header("anthropic-version", "2023-06-01")
-                .header("content-type", "application/json")
-                .timeout(Duration.of(timeoutInMs, ChronoUnit.MILLIS))
-                .build();
+        HttpRequest httpRequest = generateHttpRequest(json);
         try {
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
@@ -101,6 +133,16 @@ public class ClaudeClient implements ClaudeAPI {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private HttpRequest generateHttpRequest(String json) {
+        return HttpRequest.newBuilder().uri(URI)
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .header("x-api-key", api_key)
+                .header("anthropic-version", "2023-06-01")
+                .header("content-type", "application/json")
+                .timeout(Duration.of(timeoutInMs, ChronoUnit.MILLIS))
+                .build();
     }
 
     public JsonObject generateJsonRequest(ClaudeRequest request) {

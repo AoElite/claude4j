@@ -16,5 +16,4 @@ public class RoleInput {
     private final ClaudeRole role;
     @Singular private final List<ClaudeMessage> messages;
 
-
 }

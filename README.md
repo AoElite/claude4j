@@ -38,3 +38,4 @@ TODO:
 - [ ] Stream support
 - [ ] Embeddings
 - [ ] Legacy models
+- [ ] Cache support

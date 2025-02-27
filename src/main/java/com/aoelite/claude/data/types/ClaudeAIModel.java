@@ -5,10 +5,10 @@ import lombok.Getter;
 @Getter
 public enum ClaudeAIModel implements AIModel {
 
-    HAIKU("claude-3-haiku-20240307"),
-    SONNET("claude-3-sonnet-20240229"),
-    OPUS("claude-3-opus-20240229"),
-    SONNET_3_5("claude-3-5-sonnet-20240620");
+    HAIKU_3_5("claude-3-5-haiku-latest"),
+    SONNET_3_5("claude-3-5-sonnet-latest"),
+    SONNET_3_7("claude-3-7-sonnet-latest"),
+    OPUS("claude-3-opus-latest");
 
     private final String id;
 
@@ -16,13 +16,8 @@ public enum ClaudeAIModel implements AIModel {
         this.id = id;
     }
 
-    public static ClaudeAIModel fromId(String id) {
-        for (ClaudeAIModel model : values()) {
-            if (model.id.equals(id)) {
-                return model;
-            }
-        }
-        throw new IllegalArgumentException("Unknown model id: " + id);
+    public static AIModel fromId(String id) {
+        return () -> id;
     }
 
 }

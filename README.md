@@ -1,3 +1,7 @@
+> [!WARNING]  
+> **This repository is being archived. Please use Anthropic's official Java SDK instead.**
+> https://github.com/anthropics/anthropic-sdk-java
+
 A very simple java library to interact with Claude's API
 
 Example usage:
